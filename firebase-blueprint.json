@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and settings",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User unique ID" },
+        "email": { "type": "string", "format": "email", "description": "User email" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Client": {
+      "title": "Client",
+      "description": "Textile service client",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "document": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "email": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "name"]
+    },
+    "Risco": {
+      "title": "Risco",
+      "description": "Fabric marking service record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "clientId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "model": { "type": "string" },
+        "meters": { "type": "number" },
+        "unitCost": { "type": "number" },
+        "totalCost": { "type": "number" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "userId", "clientId", "date", "model", "totalCost"]
+    },
+    "Corte": {
+      "title": "Corte",
+      "description": "Fabric cutting service record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "clientId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "model": { "type": "string" },
+        "pieceValue": { "type": "number" },
+        "quantity": { "type": "number" },
+        "totalCost": { "type": "number" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "userId", "clientId", "date", "model", "totalCost"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Storage for user profile data"
+    },
+    "/users/{userId}/clients/{clientId}": {
+      "schema": "Client",
+      "description": "Storage for client records belonging to a user"
+    },
+    "/users/{userId}/riscos/{riscoId}": {
+      "schema": "Risco",
+      "description": "Storage for risking service records belonging to a user"
+    },
+    "/users/{userId}/cortes/{corteId}": {
+      "schema": "Corte",
+      "description": "Storage for cutting service records belonging to a user"
+    }
+  }
+}

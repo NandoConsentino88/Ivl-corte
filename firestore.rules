@@ -1,0 +1,118 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Helpers ---
+    function isValidUser(data) {
+      return data.uid == request.auth.uid 
+        && (data.email == null || data.email is string)
+        && data.keys().hasAll(['uid'])
+        && data.keys().size() >= 1;
+    }
+
+    function isValidClient(data) {
+      return data.userId == request.auth.uid
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 256
+        && (data.document == null || data.document is string)
+        && (data.whatsapp == null || data.whatsapp is string)
+        && (data.email == null || data.email is string)
+        && (data.notes == null || data.notes is string)
+        && data.keys().hasAll(['id', 'userId', 'name'])
+        && data.keys().size() <= 12;
+    }
+
+    function isValidRisco(data) {
+      return data.userId == request.auth.uid
+        && data.clientId is string && isValidId(data.clientId)
+        && data.date is string && data.date.size() == 10 // YYYY-MM-DD
+        && data.model is string && data.model.size() <= 256
+        && data.amount is number && data.amount >= 0
+        && data.unitCost is number && data.unitCost >= 0
+        && data.totalCost is number && data.totalCost >= 0
+        && (data.notes == null || data.notes is string)
+        && data.keys().hasAll(['id', 'userId', 'clientId', 'date', 'model', 'totalCost', 'amount', 'unit'])
+        && data.keys().size() <= 12;
+    }
+
+    function isValidCorte(data) {
+      return data.userId == request.auth.uid
+        && data.clientId is string && isValidId(data.clientId)
+        && data.date is string && data.date.size() == 10
+        && data.model is string && data.model.size() <= 256
+        && data.pieceValue is number && data.pieceValue >= 0
+        && data.quantity is number && data.quantity >= 0
+        && data.totalCost is number && data.totalCost >= 0
+        && (data.notes == null || data.notes is string)
+        && data.keys().hasAll(['id', 'userId', 'clientId', 'date', 'model', 'totalCost', 'quantity', 'pieceValue'])
+        && data.keys().size() <= 12;
+    }
+
+    // --- Resources ---
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming())
+        && incoming().uid == existing().uid
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'email', 'updatedAt']);
+
+      match /clients/{clientId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(clientId);
+        allow create: if isOwner(userId) && isValidId(clientId) && isValidClient(incoming());
+        allow update: if isOwner(userId) && isValidId(clientId) && isValidClient(incoming())
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId;
+        allow delete: if isOwner(userId) && isValidId(clientId);
+      }
+
+      match /riscos/{riscoId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(riscoId);
+        allow create: if isOwner(userId) && isValidId(riscoId) && isValidRisco(incoming())
+          && exists(/databases/$(database)/documents/users/$(userId)/clients/$(incoming().clientId));
+        allow update: if isOwner(userId) && isValidId(riscoId) && isValidRisco(incoming())
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().clientId == existing().clientId;
+        allow delete: if isOwner(userId) && isValidId(riscoId);
+      }
+
+      match /cortes/{corteId} {
+        allow list: if isOwner(userId);
+        allow get: if isOwner(userId) && isValidId(corteId);
+        allow create: if isOwner(userId) && isValidId(corteId) && isValidCorte(incoming())
+          && exists(/databases/$(database)/documents/users/$(userId)/clients/$(incoming().clientId));
+        allow update: if isOwner(userId) && isValidId(corteId) && isValidCorte(incoming())
+          && incoming().id == existing().id
+          && incoming().userId == existing().userId
+          && incoming().clientId == existing().clientId;
+        allow delete: if isOwner(userId) && isValidId(corteId);
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "IVL Gestão de Corte",
+  "description": "PWA para administração de serviços de corte têxtil e risco da IVL Comércio e Confecções LTDA. Inclui gestão de clientes, cálculos automatizados e geração de orçamentos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

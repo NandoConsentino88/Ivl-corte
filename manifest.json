@@ -1,0 +1,17 @@
+{
+  "name": "IVL COMÉRCIO E CONFECÇÕES",
+  "short_name": "IVL App",
+  "description": "Sistema Profissional de Gestão de Corte Têxtil IVL",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#1A1A2E",
+  "theme_color": "#1A1A2E",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

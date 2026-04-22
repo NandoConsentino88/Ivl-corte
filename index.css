@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-brand-primary: #1A1A2E;
+  --color-brand-secondary: #16213E;
+  --color-brand-accent: #C9A84C;
+  --color-brand-vibrant: #00D4FF;
+  --color-brand-coral: #FF6B6B;
+  
+  --color-glass-bg: rgba(255, 255, 255, 0.08);
+  --color-glass-border: rgba(255, 255, 255, 0.15);
+}
+
+@layer base {
+  body {
+    @apply text-gray-100 font-sans antialiased min-h-screen;
+    background-color: #1A1A2E;
+    background-image: 
+      radial-gradient(circle at 20% 20%, #16213E 0%, #1A1A2E 100%),
+      radial-gradient(circle at 80% 80%, #1B1B3A 0%, #1A1A2E 100%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--color-glass-border);
+  }
+
+  .glass-card {
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--color-glass-border);
+    @apply rounded-3xl p-6 shadow-2xl transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply border-white/20 translate-y-[-2px];
+  }
+
+  .shadow-glow {
+    filter: drop-shadow(0 0 8px var(--color-brand-accent));
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+    position: static !important;
+    visibility: visible !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    overflow: visible !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  body, #root, .min-h-screen {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+    margin: 0 !important;
+    background: white !important;
+  }
+
+  main {
+    display: block !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+
+  /* Reset layout for print */
+  .fixed, .sticky {
+    position: static !important;
+  }
+
+  .print-container {
+    padding: 0;
+    width: 100%;
+    margin: 0;
+    background: transparent !important;
+  }
+
+  /* Force background colors for sections */
+  .bg-slate-50 {
+    background-color: #f8fafc !important;
+  }
+
+  .bg-brand-primary {
+    background-color: #1A1A2E !important;
+  }
+
+  .bg-brand-accent {
+    background-color: #C9A84C !important;
+  }
+
+  .border-slate-100 {
+    border-color: #f1f5f9 !important;
+  }
+
+  .text-brand-primary { color: #1A1A2E !important; }
+  .text-brand-accent { color: #C9A84C !important; }
+  .text-white { color: #ffffff !important; }
+}
+
+.print-only {
+  display: none;
+}
